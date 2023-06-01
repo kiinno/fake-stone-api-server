@@ -4,7 +4,7 @@ import { rateLimit } from 'express-rate-limit';
 import { config } from 'dotenv';
 import ApiRoute from './routes/index';
 import morgan from 'morgan';
-import { checkAPIKey, rejectBlockedIP } from './middlewares/guard';
+import { rejectBlockedIP } from './middlewares/guard';
 import ErrorResponse from './utils/errorResponse';
 import globalError from './middlewares/globalError';
 
@@ -38,7 +38,7 @@ app.use(
 		legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 	}),
 	rejectBlockedIP,
-	checkAPIKey,
+	// checkAPIKey,
 	json({
 		limit: '100kb',
 	}),

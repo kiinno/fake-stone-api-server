@@ -37,6 +37,7 @@ const schema = new Schema<IProduct>(
 		},
 		owner: {
 			type: Types.ObjectId,
+			required: true,
 			ref: 'User',
 		},
 		productImage: {

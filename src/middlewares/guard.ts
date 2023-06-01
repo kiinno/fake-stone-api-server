@@ -15,7 +15,7 @@ export interface SuperRequest extends Request {
 	};
 }
 
-export async function rejectBlockedIP(req: Request, res: Response, next: NextFunction) {
+export const rejectBlockedIP = asyncHandler(async (req: Request, _res: Response, next: NextFunction) => {
 	const blockedIP: IBlockedIP | null = await BlockedIP.findOne({
 		ip: req.socket.remoteAddress,
 	});
@@ -26,14 +26,14 @@ export async function rejectBlockedIP(req: Request, res: Response, next: NextFun
 			const bannedTo = new Date(blockedIP.to);
 			const unlockedIn = `${bannedTo.toUTCString()}`;
 			if (dt < bannedTo) {
-				return res.status(200).end(`${msg}, Unlocked in ${unlockedIn}`);
+				return next(new ErrorResponse(`${msg}, Unlocked in ${unlockedIn}`, 401));
 			}
 		} else {
-			return res.status(200).end(msg);
+			return next(new ErrorResponse(msg, 401));
 		}
 	}
 	return next();
-}
+});
 
 export const authenticate = asyncHandler(async (req: SuperRequest, _res: Response, next: NextFunction) => {
 	let token = req.get('Authentication');

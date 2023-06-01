@@ -18,13 +18,19 @@ import BlockedIP, { IBlockedIP } from '../models/blockedIp';
 import APIKey, { IAPIKey } from '../models/apiKey';
 import APIKeyGenerator from '../utils/generators/APIKey.generator';
 
+// Post
+import Post, { IPOST } from '../models/post';
+import postGenerator from '../utils/generators/post.generator';
+
 const api = Router();
 
 api.use('/users', new ApplyRoute<IUSER>(User, userGenerator).router);
 
 api.use('/products', new ApplyRoute<IProduct>(Product, productGenerator).router);
 
-api.use('/banned', new ApplyRoute<IBlockedIP>(BlockedIP, BlockedIPGenerator).router);
+api.use('/posts', new ApplyRoute<IPOST>(Post, postGenerator).router);
+
+api.use('/ban', new ApplyRoute<IBlockedIP>(BlockedIP, BlockedIPGenerator).router);
 
 api.use('/api-keys', new ApplyRoute<IAPIKey>(APIKey, APIKeyGenerator).router);
 

@@ -1,12 +1,13 @@
 import type { Model } from 'mongoose';
 import type { Request, Response } from 'express';
+import asyncHandler from 'express-async-handler';
 
 export default class StoneService<T> {
 	constructor(private _Model: Model<T>) {}
 
 	generator(genFunc: () => Promise<T>) {
 		const _Model = this._Model;
-		return async function (req: Request, res: Response): Promise<void> {
+		return asyncHandler(async (req: Request, res: Response): Promise<void> => {
 			const { MAX_GENERATE_LIMIT = 100 } = process.env;
 			let { length = 0 } = req.query;
 			length = +length;
@@ -22,17 +23,17 @@ export default class StoneService<T> {
 				required_number: length,
 				max_limit: MAX_GENERATE_LIMIT,
 			});
-		};
+		});
 	}
 
 	clean() {
 		const _Model = this._Model;
-		return async function (_req: Request, res: Response): Promise<void> {
+		return asyncHandler(async (_req: Request, res: Response): Promise<void> => {
 			const resault = await _Model.deleteMany({});
 			res.status(200).json({
 				status: 'success',
 				count: resault.deletedCount,
 			});
-		};
+		});
 	}
 }

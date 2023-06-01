@@ -1,13 +1,14 @@
 import { HydratedDocument, Model } from 'mongoose';
-import type { Response, Request } from 'express';
+import type { Response, Request, NextFunction } from 'express';
 import mongooseErrorConverter from '../utils/mongooseError.converter';
+import asyncHandler from 'express-async-handler';
 
 class GlobalService<T> {
 	constructor(private _Model: Model<T>) {}
 
 	getDocuments(populateRef?: string, popSelect?: string) {
 		const _Model = this._Model;
-		return async function (req: Request, res: Response): Promise<void> {
+		return asyncHandler(async (req: Request, res: Response): Promise<void> => {
 			// Pagenation
 			let { page = 1, limit = 10 } = req.query;
 
@@ -36,7 +37,6 @@ class GlobalService<T> {
 					return previos;
 				}, {});
 				query = query.select(selectFeilds);
-				console.log(selectFeilds);
 			}
 
 			// Populations
@@ -57,12 +57,12 @@ class GlobalService<T> {
 				available,
 				data: resaults,
 			});
-		};
+		});
 	}
 
 	addDocument() {
 		const _Model = this._Model;
-		return async function (req: Request, res: Response): Promise<void> {
+		return asyncHandler(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 			try {
 				const resault: HydratedDocument<T> = await _Model.create(req.body);
 				res.status(200).json({
@@ -75,9 +75,11 @@ class GlobalService<T> {
 					if (typeof vError === 'object') {
 						res.status(500).json({ ...vError, status: 'error' });
 					}
+				} else {
+					next(error);
 				}
 			}
-		};
+		});
 	}
 }
 

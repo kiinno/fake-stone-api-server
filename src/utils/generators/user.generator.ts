@@ -21,7 +21,6 @@ export function generateLocation(): ILOCATION {
 export async function getRandomFriendList(_max = 30): Promise<Types.ObjectId[]> {
 	const users: Types.ObjectId[] = await User.find({}, { _id: true });
 	return users.filter((): boolean => faker.datatype.boolean()).slice(0, _max);
-	// .map((_userId: string): Types.ObjectId => new Types.ObjectId(_userId));
 }
 
 export default async function (): Promise<IUSER> {
