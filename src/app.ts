@@ -1,11 +1,12 @@
-import express, { json, urlencoded, Request, Response } from 'express';
+import express, { json, urlencoded, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import { rateLimit } from 'express-rate-limit';
 import { config } from 'dotenv';
 import ApiRoute from './routes/index';
 import morgan from 'morgan';
-import { rejectBlockedIP } from './middlewares/guard';
-import { Authenticate } from './middlewares/authentication';
+import { checkAPIKey, rejectBlockedIP } from './middlewares/guard';
+import ErrorResponse from './utils/errorResponse';
+import globalError from './middlewares/globalError';
 
 const app = express();
 
@@ -20,7 +21,6 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 app.use(
-	Authenticate,
 	cors({
 		methods: ['GET', 'POST', 'PATCH', 'DELETE', 'PUT'],
 		origin: '*',
@@ -38,6 +38,7 @@ app.use(
 		legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 	}),
 	rejectBlockedIP,
+	checkAPIKey,
 	json({
 		limit: '100kb',
 	}),
@@ -48,18 +49,11 @@ app.use(
 );
 
 app.use('/api', ApiRoute);
-app.use('*', (_req: Request, res: Response) => {
-	res.status(404).json({
-		status: 'Not Found',
-		message: '404 Page not found',
-	});
+
+app.use('*', (_req: Request, _res: Response, next: NextFunction) => {
+	next(new ErrorResponse('Page not found', 404));
 });
 
-app.use((err: unknown, _req: Request, res: Response) => {
-	res.status(404).json({
-		status: 'error',
-		err,
-	});
-});
+app.use(globalError);
 
 export default app;

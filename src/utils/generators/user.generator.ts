@@ -74,7 +74,7 @@ export default async function (): Promise<IUSER> {
 		password: password,
 		plainPassword: password,
 		friends: await getRandomFriendList(30),
-		super: faker.number.int({ min: 0, max: 2 }),
+		super: faker.number.int({ min: 0, max: 2 }) as 0 | 1 | 2,
 		avatar: faker.internet.avatar(),
 	};
 }

@@ -21,7 +21,7 @@ let { DB_URI = 'mongodb://127.0.0.1' } = process.env;
 const { DB_NAME = 'fake-stone-api', DB_PASS = '', DB_USER = '' } = process.env;
 
 DB_URI = DB_URI.replace('<username>', DB_USER).replace('<password>', DB_PASS) + `/${DB_NAME}`;
-console.log(DB_URI);
+
 connect(DB_URI).then(function (connection): void {
 	const { host: db_host, port: db_port, name: db_name } = connection.connections[0];
 	console.log(`Connected successfuly with database server at ${db_host}:${db_port} on '${db_name}'`);

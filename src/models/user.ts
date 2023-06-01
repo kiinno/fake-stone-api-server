@@ -46,7 +46,7 @@ export interface IUSER {
 	};
 
 	location: ILOCATION;
-	super: number;
+	super: 0 | 1 | 2;
 
 	friends?: Types.ObjectId[];
 }

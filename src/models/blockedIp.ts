@@ -2,10 +2,7 @@ import { Schema, model } from 'mongoose';
 
 export interface IBlockedIP {
 	ip: string;
-	banned?: {
-		forever?: boolean;
-		to?: Date;
-	};
+	to?: Date;
 	comment?: string;
 }
 
@@ -16,10 +13,7 @@ const schema = new Schema<IBlockedIP>(
 			required: true,
 		},
 		comment: String,
-		banned: {
-			forever: Boolean,
-			to: Date,
-		},
+		to: Date,
 	},
 	{ timestamps: true, versionKey: false }
 );

@@ -1,6 +1,6 @@
 import type { Request, Response } from 'express';
 import User from '../models/user';
-import { SuperRequest } from '../middlewares/authentication';
+import { SuperRequest } from '../middlewares/guard';
 
 export async function login(req: Request, res: Response) {
 	const { username, password } = req.body;
