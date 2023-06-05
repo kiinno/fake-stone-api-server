@@ -7,11 +7,23 @@ import asyncHandler from 'express-async-handler';
 import ErrorResponse from '../utils/errorResponse';
 import APIKey from '../models/apiKey';
 
+export interface FieldOptions {
+	fieldName: string;
+	width?: number;
+	height?: number;
+	dest: string;
+	multiple?: boolean;
+}
+
 export interface SuperRequest extends Request {
 	auth?: {
 		isAuthenticated: boolean;
 		token?: string;
 		user?: IUSER;
+	};
+	sharps?: {
+		ready?: boolean;
+		sharps?: { file: FieldOptions; buffer: any; path: string }[];
 	};
 }
 

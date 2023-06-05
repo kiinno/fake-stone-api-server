@@ -2,6 +2,7 @@ import { HydratedDocument, Model } from 'mongoose';
 import type { Response, Request, NextFunction } from 'express';
 import mongooseErrorConverter from '../utils/mongooseError.converter';
 import asyncHandler from 'express-async-handler';
+import { SuperRequest } from '../middlewares/guard';
 
 class GlobalService<T> {
 	constructor(private _Model: Model<T>) {}
@@ -20,7 +21,8 @@ class GlobalService<T> {
 			const skipped: number = (page - 1) * limit;
 			let available: number = documentsLen - skipped - limit;
 			available = available < 0 ? 0 : available;
-			const availablePages = pages <= 0 ? 0 : pages - page;
+			const availablePages = pages && pages - page < 0 ? 0 : pages - page;
+			const next = availablePages < pages && available > 1 ? page + 1 : null;
 
 			let query: any = _Model.find({}).limit(limit).skip(skipped);
 
@@ -51,8 +53,8 @@ class GlobalService<T> {
 				limit: +limit,
 				pages,
 				page: page,
-				prev: page - 1 <= 0 ? null : page - 1,
-				next: availablePages + 1 > pages ? null : page + 1,
+				prev: page - 1 < 1 ? null : page - 1,
+				next,
 				availablePages,
 				available,
 				data: resaults,
@@ -62,9 +64,13 @@ class GlobalService<T> {
 
 	addDocument() {
 		const _Model = this._Model;
-		return asyncHandler(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+		return asyncHandler(async (req: SuperRequest, res: Response, next: NextFunction): Promise<void> => {
 			try {
 				const resault: HydratedDocument<T> = await _Model.create(req.body);
+				if (req.sharps) {
+					req.sharps.ready = true;
+				}
+				next();
 				res.status(200).json({
 					status: 'success',
 					data: resault,

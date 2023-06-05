@@ -1,4 +1,4 @@
-import express, { json, urlencoded, Request, Response, NextFunction } from 'express';
+import express, { json, urlencoded, Request, Response, NextFunction, static as reservStatics } from 'express';
 import cors from 'cors';
 import { rateLimit } from 'express-rate-limit';
 import { config } from 'dotenv';
@@ -7,6 +7,7 @@ import morgan from 'morgan';
 import { rejectBlockedIP } from './middlewares/guard';
 import ErrorResponse from './utils/errorResponse';
 import globalError from './middlewares/globalError';
+import { join } from 'path';
 
 const app = express();
 
@@ -18,6 +19,12 @@ config({
 if (process.env.NODE_ENV === 'development') {
 	console.log('Development Mode Running.');
 	app.use(morgan('short'));
+}
+
+// serve static files
+const { UPLOADS_PATH, UPLOADS_ROUTE = '/' } = process.env;
+if (UPLOADS_PATH) {
+	app.use(UPLOADS_ROUTE, reservStatics(join(__dirname, UPLOADS_PATH)));
 }
 
 app.use(
