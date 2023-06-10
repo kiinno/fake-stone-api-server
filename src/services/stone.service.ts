@@ -4,7 +4,11 @@ import asyncHandler from 'express-async-handler';
 
 export default class StoneService<T> {
 	constructor(private _Model: Model<T>) {}
-
+	/**
+	 * Create Generator Middleware
+	 * @param genFunc Form State Generator Function
+	 * @returns Middleware
+	 */
 	generator(genFunc: () => Promise<T>) {
 		const _Model = this._Model;
 		return asyncHandler(async (req: Request, res: Response): Promise<void> => {
@@ -25,7 +29,10 @@ export default class StoneService<T> {
 			});
 		});
 	}
-
+	/**
+	 * Create Clean Middleware to delete all documents from the collection
+	 * @returns Middleware
+	 */
 	clean() {
 		const _Model = this._Model;
 		return asyncHandler(async (_req: Request, res: Response): Promise<void> => {

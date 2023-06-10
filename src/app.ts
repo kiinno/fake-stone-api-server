@@ -22,9 +22,9 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // serve static files
-const { UPLOADS_PATH, UPLOADS_ROUTE = '/' } = process.env;
-if (UPLOADS_PATH) {
-	app.use(UPLOADS_ROUTE, reservStatics(join(__dirname, UPLOADS_PATH)));
+const { IMAGES_PATH, IMAGES_ROUTE = '/image' } = process.env;
+if (IMAGES_PATH) {
+	app.use(IMAGES_ROUTE, reservStatics(join(__dirname, IMAGES_PATH)));
 }
 
 app.use(

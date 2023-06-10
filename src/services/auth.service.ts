@@ -4,6 +4,14 @@ import { SuperRequest } from '../middlewares/guard';
 import asyncHandler from 'express-async-handler';
 import ErrorResponse from '../utils/errorResponse';
 
+/**
+ * Authenticate a user with username and password if Authentication data is valid will be get the token else will be get an error response
+ * @body [Username*, Password*]
+ * @param req
+ * @param res
+ * @param next
+ * @return Login Controller
+ */
 export const login = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
 	const { username, password } = req.body;
 	const user = await User.findOne({ username });
@@ -18,6 +26,12 @@ export const login = asyncHandler(async (req: Request, res: Response, next: Next
 	}
 });
 
+/**
+ * Response user document if authenticated else will be get error response
+ * @param req
+ * @param res
+ * @param next
+ */
 export function verifyToken(req: SuperRequest, res: Response, next: NextFunction) {
 	if (req.auth?.isAuthenticated) {
 		res.status(200).json({

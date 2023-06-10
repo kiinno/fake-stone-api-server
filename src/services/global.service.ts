@@ -6,7 +6,10 @@ import { SuperRequest } from '../middlewares/guard';
 
 class GlobalService<T> {
 	constructor(private _Model: Model<T>) {}
-
+	/**
+	 * Get all documents from the database collection with features like pagination and - sorting - selection - search
+	 * @returns Get Documents Controller
+	 */
 	getDocuments(populateRef?: string, popSelect?: string) {
 		const _Model = this._Model;
 		return asyncHandler(async (req: Request, res: Response): Promise<void> => {
@@ -61,25 +64,23 @@ class GlobalService<T> {
 			});
 		});
 	}
-
+	/**
+	 * Create new document in Database
+	 * @returns C
+	 */
 	addDocument() {
 		const _Model = this._Model;
 		return asyncHandler(async (req: SuperRequest, res: Response, next: NextFunction): Promise<void> => {
 			try {
 				const resault: HydratedDocument<T> = await _Model.create(req.body);
-				if (req.sharps) {
-					req.sharps.ready = true;
-				}
+				res.status(200).json({ status: 'success', data: resault });
+				if (req.sharps) req.sharps.ready = true;
 				next();
-				res.status(200).json({
-					status: 'success',
-					data: resault,
-				});
 			} catch (error: any) {
 				const vError = mongooseErrorConverter(error);
 				if (mongooseErrorConverter(error)) {
 					if (typeof vError === 'object') {
-						res.status(500).json({ ...vError, status: 'error' });
+						res.status(500).json({ ...vError, status: 'error', form: req.body });
 					}
 				} else {
 					next(error);

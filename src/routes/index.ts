@@ -30,7 +30,10 @@ api.use(
 	new ApplyRoute<IUSER>(User, userGenerator, {
 		index: {
 			post: {
-				before: [upload.single('avatar'), imageHandler([{ fieldName: 'avatar', dest: 'user/avatar' }])],
+				before: [
+					upload.single('avatar'),
+					imageHandler([{ fieldName: 'avatar', dest: 'user/avatar', height: 200, width: 200 }]),
+				],
 				after: [saveSharps],
 			},
 		},
@@ -79,4 +82,7 @@ api.use('/api-keys', new ApplyRoute<IAPIKey>(APIKey, APIKeyGenerator).router);
 
 api.use('/auth', authRoute);
 
+/**
+ * Main Router
+ */
 export default api;

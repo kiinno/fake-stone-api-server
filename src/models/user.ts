@@ -1,6 +1,7 @@
 import { Schema, model, Types, Model } from 'mongoose';
 import { hashSync, genSaltSync, compare } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
+import { getStringImageURL, onDeleteDocumentDeleteImages, setStringImageURL } from '../utils/modelFeatures';
 
 export interface ILOCATION {
 	buildingNumber: string;
@@ -149,6 +150,8 @@ const schema = new Schema<IUSER, UserModel, IUSERMethods>(
 		avatar: {
 			type: String,
 			default: null,
+			get: getStringImageURL,
+			set: setStringImageURL,
 		},
 		friends: {
 			type: [Types.ObjectId],
@@ -169,6 +172,9 @@ schema.methods.generateToken = function () {
 	const token = sign({ id: this._id }, JWT_SECRET_KEY);
 	return token;
 };
+
+// Mongoose Middleware
+schema.post<IUSER>(/delete/i, onDeleteDocumentDeleteImages<IUSER>(['avatar']));
 
 const User = model<IUSER, UserModel>('User', schema);
 

@@ -39,10 +39,15 @@ export default class ApplyRoute<IModelSchema> {
 		public extraMiddlewares?: IExtraMiddlewares
 	) {
 		this.router = Router();
+
+		// Services Instances
 		this.globalServices = new GlobalServices<IModelSchema>(this._Model);
 		this.docServices = new DocServices<IModelSchema>(this._Model);
 		this.stoneServices = new StoneServices<IModelSchema>(this._Model);
-		console.log(extraMiddlewares?.index?.post?.after);
+
+		// Mouting Service
+
+		// Index Service
 		!extraMiddlewares?.index?.disabled &&
 			this.router
 				.route(extraMiddlewares?.index?.prefix || '/')
@@ -57,6 +62,7 @@ export default class ApplyRoute<IModelSchema> {
 					...(extraMiddlewares?.index?.post?.after || [])
 				);
 
+		// Spicific Document Service
 		!extraMiddlewares?.single?.disabled &&
 			this.router
 				.route(`${extraMiddlewares?.single?.prefix || '/id'}/:id`)
@@ -65,12 +71,18 @@ export default class ApplyRoute<IModelSchema> {
 					this.docServices.getSDocument(),
 					...(extraMiddlewares?.single?.get?.after || [])
 				)
+				.put(
+					extraMiddlewares?.single?.put?.before || [],
+					this.docServices.updateSDocument(),
+					...(extraMiddlewares?.single?.put?.after || [])
+				)
 				.delete(
 					extraMiddlewares?.single?.delete?.before || [],
 					this.docServices.delSDocument(),
 					...(extraMiddlewares?.single?.delete?.after || [])
 				);
 
+		// Stone Service
 		!extraMiddlewares?.stone?.disabled &&
 			this.router
 				.route(extraMiddlewares?.stone?.prefix || '/stone')

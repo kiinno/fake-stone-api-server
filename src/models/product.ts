@@ -1,4 +1,11 @@
 import { Schema, model, Types } from 'mongoose';
+import {
+	getStringImageURL,
+	getListStringImageURL,
+	setListStringImageURL,
+	setStringImageURL,
+	onDeleteDocumentDeleteImages,
+} from '../utils/modelFeatures';
 
 export interface IProduct {
 	title: string;
@@ -44,11 +51,25 @@ const schema = new Schema<IProduct>(
 			type: String,
 			trim: true,
 			required: true,
+			get: getStringImageURL,
+			set: setStringImageURL,
 		},
-		thumbnails: [String],
+		thumbnails: {
+			type: [String],
+			get: getListStringImageURL,
+			set: setListStringImageURL,
+		},
 	},
-	{ timestamps: true, versionKey: false }
+	{
+		timestamps: true,
+		toObject: { getters: true },
+		toJSON: { getters: true },
+	}
 );
+
+// Mongoose Middleware
+schema.post<IProduct>(/delete/i, onDeleteDocumentDeleteImages(['productImage', 'thumbnails']));
+
 const Product = model<IProduct>('Product', schema);
 
 export default Product;

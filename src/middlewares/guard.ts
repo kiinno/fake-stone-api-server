@@ -26,7 +26,9 @@ export interface SuperRequest extends Request {
 		sharps?: { file: FieldOptions; buffer: any; path: string }[];
 	};
 }
-
+/**
+ * Check if the user ip is not blocked if not blocked will continue middleware stack else sending an error
+ */
 export const rejectBlockedIP = asyncHandler(async (req: Request, _res: Response, next: NextFunction) => {
 	const blockedIP: IBlockedIP | null = await BlockedIP.findOne({
 		ip: req.socket.remoteAddress,
@@ -47,6 +49,9 @@ export const rejectBlockedIP = asyncHandler(async (req: Request, _res: Response,
 	return next();
 });
 
+/**
+ * Check user token is valid to continue as authenticated user and create req.auth object else will be send an error message
+ */
 export const authenticate = asyncHandler(async (req: SuperRequest, _res: Response, next: NextFunction) => {
 	let token = req.get('Authentication');
 	const { JWT_SECRET_KEY = '' } = process.env;
@@ -69,6 +74,11 @@ export const authenticate = asyncHandler(async (req: SuperRequest, _res: Respons
 	next();
 });
 
+/**
+ * Return middle to check the user authorization
+ * @param su
+ * @returns Express Middleware
+ */
 export const isSuperUser = (su: 0 | 1 | 2) =>
 	asyncHandler(async (req: SuperRequest, _res: Response, next: NextFunction) => {
 		if (req.auth?.isAuthenticated) {
@@ -79,6 +89,9 @@ export const isSuperUser = (su: 0 | 1 | 2) =>
 		next(new ErrorResponse('Unauthorized or you dont have permissions to access this page.', 403));
 	});
 
+/**
+ * Check And Validate The API Key Is valid and not expired if rejected will be send an error message
+ */
 export const checkAPIKey = asyncHandler(async (req: SuperRequest, _res: Response, next: NextFunction) => {
 	const key = req.get('X-API-KEY');
 	if (key) {
