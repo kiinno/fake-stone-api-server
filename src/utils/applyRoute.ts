@@ -3,6 +3,7 @@ import GlobalServices from '../services/global.service';
 import StoneServices from '../services/stone.service';
 import DocServices from '../services/document.service';
 import { Model } from 'mongoose';
+import { documentIDValidationChain, vResault } from '../utils/validators/global';
 
 interface Middlewares {
 	before?: RequestHandler[];
@@ -68,16 +69,22 @@ export default class ApplyRoute<IModelSchema> {
 				.route(`${extraMiddlewares?.single?.prefix || '/id'}/:id`)
 				.get(
 					extraMiddlewares?.single?.get?.before || [],
+					documentIDValidationChain,
+					vResault,
 					this.docServices.getSDocument(),
 					...(extraMiddlewares?.single?.get?.after || [])
 				)
 				.put(
 					extraMiddlewares?.single?.put?.before || [],
+					documentIDValidationChain,
+					vResault,
 					this.docServices.updateSDocument(),
 					...(extraMiddlewares?.single?.put?.after || [])
 				)
 				.delete(
 					extraMiddlewares?.single?.delete?.before || [],
+					documentIDValidationChain,
+					vResault,
 					this.docServices.delSDocument(),
 					...(extraMiddlewares?.single?.delete?.after || [])
 				);

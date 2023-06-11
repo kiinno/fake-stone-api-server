@@ -15,14 +15,13 @@ import ErrorResponse from '../utils/errorResponse';
 export const login = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
 	const { username, password } = req.body;
 	const user = await User.findOne({ username });
-
 	if (user && (await user.verifyPassword(password))) {
 		res.status(200).json({
 			status: 'success',
 			token: user.generateToken(),
 		});
 	} else {
-		next(new ErrorResponse('invalid username or password', 304));
+		next(new ErrorResponse('invalid username or password', 400));
 	}
 });
 

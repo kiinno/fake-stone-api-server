@@ -4,7 +4,7 @@ import { rateLimit } from 'express-rate-limit';
 import { config } from 'dotenv';
 import ApiRoute from './routes/index';
 import morgan from 'morgan';
-import { rejectBlockedIP } from './middlewares/guard';
+import { rejectBlockedIP, checkAPIKey } from './middlewares/guard';
 import ErrorResponse from './utils/errorResponse';
 import globalError from './middlewares/globalError';
 import { join } from 'path';
