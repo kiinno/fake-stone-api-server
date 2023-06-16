@@ -22,6 +22,10 @@ import APIKeyGenerator from '../utils/generators/APIKey.generator';
 import Post, { IPOST } from '../models/post';
 import postGenerator from '../utils/generators/post.generator';
 import upload, { imageHandler, saveSharps } from '../middlewares/upload';
+import datesReminder, { IDateReminder } from '../models/datesReminder';
+import DateReminderGenerator from '../utils/generators/DateReminder.generator';
+import FoodMenu, { IFoodItem } from '../models/FoodMenu';
+import FoodItemGenerator from '../utils/generators/FoodItem.generator';
 
 const api = Router();
 
@@ -70,6 +74,33 @@ api.use(
 					upload.fields([{ name: 'images', maxCount: 20 }]),
 					imageHandler([{ fieldName: 'images', dest: 'posts/*/', multiple: true }]),
 				],
+				after: [saveSharps],
+			},
+		},
+	}).router
+);
+
+api.use(
+	'/dates-reminder',
+	new ApplyRoute<IDateReminder>(datesReminder, DateReminderGenerator, {
+		index: {
+			post: {
+				before: [
+					upload.single('avatar'),
+					imageHandler([{ fieldName: 'avatar', dest: 'dates-reminder-avatars/' }]),
+				],
+				after: [saveSharps],
+			},
+		},
+	}).router
+);
+
+api.use(
+	'/food-menu',
+	new ApplyRoute<IFoodItem>(FoodMenu, FoodItemGenerator, {
+		index: {
+			post: {
+				before: [upload.single('image'), imageHandler([{ fieldName: 'image', dest: 'food-menu/' }])],
 				after: [saveSharps],
 			},
 		},

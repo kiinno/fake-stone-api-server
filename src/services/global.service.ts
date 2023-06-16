@@ -15,10 +15,10 @@ class GlobalService<T> {
 		return asyncHandler(async (req: Request, res: Response): Promise<void> => {
 			// Pagenation
 			let { page = 1, limit = 10 } = req.query;
+			page = +page;
+			limit = +limit;
 
 			// Formating query fields to skip -> errors
-			page = +page < 1 ? 1 : +page;
-			limit = +limit < 1 ? 10 : +limit;
 			const documentsLen: number = await _Model.find({}).countDocuments();
 			const pages = Math.ceil(documentsLen / limit);
 			const skipped: number = (page - 1) * limit;
